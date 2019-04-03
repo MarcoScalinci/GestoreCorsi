@@ -6,10 +6,13 @@ package it.polito.tdp.corsi;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Map.Entry;
 
 import it.polito.tdp.corsi.model.Corso;
 import it.polito.tdp.corsi.model.GestoreCorsi;
+import it.polito.tdp.corsi.model.Studente;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -38,39 +41,82 @@ public class GestoreCorsiController {
     @FXML // fx:id="btnStatCorsi"
     private Button btnStatCorsi; // Value injected by FXMLLoader
 
+    @FXML // fx:id="btnStudentiCorso"
+    private Button btnStudentiCorso; // Value injected by FXMLLoader
+
+    @FXML // fx:id="btnCDS"
+    private Button btnCDS; // Value injected by FXMLLoader
+    
+    @FXML //fx:id="txtCorso"
+    private TextField txtCorso;
+    
     @FXML
     void doCalcolaStatCorsi(ActionEvent event) {
-    	
+//   1 	 copiamo prima il controllo INPUT dal cercaCorsi 
+//   2	   e poi il procedimento provato nel testModel
+    	int periodo;
+   	 try {
+   		   periodo= Integer.parseInt(txtPeriodo.getText());
+   	     } catch (NumberFormatException e){
+   		   txtResult.appendText("Devi inserire un periodo valido ( 1 o 2)");
+   		   return;
+   	       }
+   	 if(periodo!=1 || periodo != 2)
+   	   {txtResult.appendText("Devi inserire un periodo valido ( 1 o 2)");
+   	    return;
+   	   }
+    	Map<String,Integer> risultato = model.getIscrittiCorsi(periodo);
+    	for(Entry e : risultato.entrySet()) {
+			txtResult.appendText(e.getKey()+"="+e.getValue()+"\n");
+    	}
     }
 
     @FXML
     void doCercaCorsi(ActionEvent event) {
+    
     	int periodo;
-    	try {
-    		periodo = Integer.parseInt(txtPeriodo.getText());
-    	} catch (NumberFormatException e) {
-    		txtResult.appendText("Devi inserire un periodo (1 o 2)");
-    		return;
-    	}
-    	if(periodo != 1 && periodo != 2) {
-    		txtResult.appendText("Devi inserire un periodo (1 o 2)");
-    		return;
-    	}
+    	 try {
+    		   periodo= Integer.parseInt(txtPeriodo.getText());
+    	     } catch (NumberFormatException e){
+    		   txtResult.appendText("Devi inserire un periodo valido ( 1 o 2)");
+    		   return;
+    	       }
+    	 if(periodo!=1 || periodo != 2)
+    	   {txtResult.appendText("Devi inserire un periodo valido ( 1 o 2)");
+    	    return;
+    	   }
     	
-    	List<Corso> corsi = this.model.getCorsiByPeriodo(periodo);
-    	for(Corso c : corsi) {
-    		txtResult.appendText(c.toString() + "\n");
-    	}
+    	 List<Corso> corsi= this.model.getCorsiByPeriodo(periodo);
+    	 for(Corso c : corsi) {
+    		 txtResult.appendText(c.toString()+"\n");
+    	 }
+    	
     	
     }
 
+    @FXML
+    void doCalcolaStatCDS(ActionEvent event) {
+
+    }
+    
+    @FXML
+    void doElencaStudenti(ActionEvent event) {
+
+    	String codins = txtCorso.getText();
+    	List<Studente> studenti = this.model.elencaStudenti(codins);
+    	for( Studente s : studenti) {
+    		txtResult.appendText(s.toString() + "\n") ;
+    	}
+    }
+    
     @FXML // This method is called by the FXMLLoader when initialization is complete
     void initialize() {
         assert txtResult != null : "fx:id=\"txtResult\" was not injected: check your FXML file 'GestoreCorsi.fxml'.";
         assert txtPeriodo != null : "fx:id=\"txtPeriodo\" was not injected: check your FXML file 'GestoreCorsi.fxml'.";
         assert btnCercaCorsi != null : "fx:id=\"btnCercaCorsi\" was not injected: check your FXML file 'GestoreCorsi.fxml'.";
         assert btnStatCorsi != null : "fx:id=\"btnStatCorsi\" was not injected: check your FXML file 'GestoreCorsi.fxml'.";
-
+        assert btnStudentiCorso != null : "fx:id=\"btnStudentiCorso\" was not injected: check your FXML file 'GestoreCorsi.fxml'.";
+        assert btnCDS != null : "fx:id=\"btnCDS\" was not injected: check your FXML file 'GestoreCorsi.fxml'.";
     }
     
     public void setModel(GestoreCorsi model) {
